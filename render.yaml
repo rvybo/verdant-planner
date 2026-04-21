@@ -1,0 +1,15 @@
+image: docker
+
+services:
+  - type: web
+    name: verdant-planner-web
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: LUMIGREEN_EMAIL
+        sync: false
+      - key: LUMIGREEN_PASSWORD
+        sync: false
+      - key: NODE_ENV
+        value: production
