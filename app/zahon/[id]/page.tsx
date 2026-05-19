@@ -2,6 +2,7 @@ import { getZahon, getZahony } from '@/lib/zahony'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import AddToCartButton from './AddToCartButton'
+import { CoverHero, PlanImg } from './ZahonCover'
 
 export async function generateStaticParams() {
   return getZahony().map((z) => ({ id: z.id }))
@@ -16,7 +17,10 @@ export default async function ZahonPage({ params }: { params: Promise<{ id: stri
 
   return (
     <main className="min-h-screen bg-stone-50">
-      <header className="bg-green-800 text-white px-6 py-6">
+      {/* Hero cover image */}
+      <CoverHero id={zahon.id} name={zahon.name} />
+
+      <header className="bg-green-800 text-white px-6 py-5">
         <Link href="/" className="text-green-300 text-sm hover:text-white mb-2 inline-block">
           ← Späť na zoznam
         </Link>
@@ -44,6 +48,29 @@ export default async function ZahonPage({ params }: { params: Promise<{ id: stri
           <div>
             <div className="text-stone-400 text-xs mb-1">Výška</div>
             <div className="font-medium text-stone-700">{zahon.specs.height}</div>
+          </div>
+        </div>
+
+        {/* Plan image + PDF */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="bg-white rounded-xl border border-stone-200 overflow-hidden">
+            <div className="px-4 pt-4 pb-2 text-xs font-semibold text-stone-500 uppercase tracking-wide">
+              Osadzací plán
+            </div>
+            <PlanImg id={zahon.id} />
+          </div>
+          <div className="flex flex-col justify-center gap-3 p-4 bg-white rounded-xl border border-stone-200">
+            <p className="text-sm text-stone-600">
+              Stiahnite si kompletný osadzací plán vo formáte PDF vrátane zoznamu rastlín a pokynov na výsadbu.
+            </p>
+            <a
+              href={`/zahony/${zahon.id}/plan.pdf`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white rounded-lg px-5 py-3 font-medium transition-colors"
+            >
+              <span>📄</span> Stiahnuť PDF plán
+            </a>
           </div>
         </div>
 

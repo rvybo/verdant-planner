@@ -4,6 +4,25 @@ import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import type { Zahon } from '@/lib/zahony'
 
+function CoverImage({ id, alt }: { id: string; alt: string }) {
+  const [src, setSrc] = useState(`/zahony/${id}/cover.jpg`)
+  const [failed, setFailed] = useState(false)
+  if (failed) return <div className="h-40 bg-stone-100" />
+  return (
+    <div className="h-40 bg-stone-100 overflow-hidden">
+      <img
+        src={src}
+        alt={alt}
+        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        onError={() => {
+          if (src.endsWith('.jpg')) setSrc(`/zahony/${id}/cover.png`)
+          else setFailed(true)
+        }}
+      />
+    </div>
+  )
+}
+
 const LIGHT_LABELS: Record<string, string> = {
   slnko: '☀️ Slnko',
   polotien: '⛅ Polotieň',
@@ -118,8 +137,12 @@ export default function ZahonyGrid({ zahony }: { zahony: Zahon[] }) {
               <Link
                 key={z.id}
                 href={`/zahon/${z.id}`}
-                className="block bg-white rounded-xl border border-stone-200 hover:border-green-400 hover:shadow-md transition-all p-4 group"
+                className="block bg-white rounded-xl border border-stone-200 hover:border-green-400 hover:shadow-md transition-all overflow-hidden group"
               >
+                {/* Cover photo */}
+                <CoverImage id={z.id} alt={z.name} />
+
+                <div className="p-4">
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <h2 className="font-semibold text-stone-800 group-hover:text-green-700 leading-tight text-sm">
                     {z.name}
@@ -169,6 +192,7 @@ export default function ZahonyGrid({ zahony }: { zahony: Zahon[] }) {
                   <span className="text-xs text-green-600 font-medium group-hover:underline">
                     Zobraziť →
                   </span>
+                </div>
                 </div>
               </Link>
             )
