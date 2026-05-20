@@ -29,6 +29,12 @@ const LIGHT_LABELS: Record<string, string> = {
   tien: '🌑 Tieň',
 }
 
+const MOISTURE_LABELS: Record<string, string> = {
+  'bežná': '🌱 Bežná',
+  'vlhko': '💧 Vlhko',
+  'sucho': '🌵 Sucho',
+}
+
 const STYLE_LABELS: Record<string, string> = {
   'prírodný': '🌿 Prírodný',
   formálny: '🏛️ Formálny',
@@ -43,15 +49,25 @@ const LIGHT_OPTIONS = [
   { value: 'tien', label: '🌑 Tieň' },
 ]
 
+const MOISTURE_OPTIONS = [
+  { value: '', label: 'Všetka vlhkosť' },
+  { value: 'bežná', label: '🌱 Bežná' },
+  { value: 'vlhko', label: '💧 Vlhko' },
+  { value: 'sucho', label: '🌵 Sucho' },
+]
+
 export default function ZahonyGrid({ zahony }: { zahony: Zahon[] }) {
   const [search, setSearch] = useState('')
   const [light, setLight] = useState('')
+  const [moisture, setMoisture] = useState('')
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
     return zahony.filter((z) => {
       // light filter
       if (light && z.categories.light !== light) return false
+      // moisture filter
+      if (moisture && z.categories.moisture !== moisture) return false
 
       // search filter — hľadá v názve záhona, rastlinách (czName, latin)
       if (q) {
@@ -66,28 +82,42 @@ export default function ZahonyGrid({ zahony }: { zahony: Zahon[] }) {
 
       return true
     })
-  }, [zahony, search, light])
+  }, [zahony, search, light, moisture])
 
   return (
     <div>
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <div className="flex flex-col gap-3 mb-6">
         <input
           type="search"
           placeholder="Hľadaj rastlinu alebo záhon… (napr. Heuchera, Astilba)"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 rounded-lg border border-stone-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
+          className="w-full rounded-lg border border-stone-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
         />
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {LIGHT_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               onClick={() => setLight(opt.value)}
               className={`px-3 py-2 rounded-lg text-xs font-medium border transition-colors whitespace-nowrap ${
                 light === opt.value
-                  ? 'bg-green-700 text-white border-green-700'
-                  : 'bg-white text-stone-600 border-stone-300 hover:border-green-400'
+                  ? 'bg-amber-600 text-white border-amber-600'
+                  : 'bg-white text-stone-600 border-stone-300 hover:border-amber-400'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+          <div className="w-px bg-stone-200 mx-1" />
+          {MOISTURE_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => setMoisture(opt.value)}
+              className={`px-3 py-2 rounded-lg text-xs font-medium border transition-colors whitespace-nowrap ${
+                moisture === opt.value
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-white text-stone-600 border-stone-300 hover:border-blue-400'
               }`}
             >
               {opt.label}
@@ -114,7 +144,7 @@ export default function ZahonyGrid({ zahony }: { zahony: Zahon[] }) {
           <div className="text-4xl mb-3">🌿</div>
           <div className="text-sm">Žiadne záhony pre tieto filtre</div>
           <button
-            onClick={() => { setSearch(''); setLight('') }}
+            onClick={() => { setSearch(''); setLight(''); setMoisture('') }}
             className="mt-3 text-green-600 text-sm hover:underline"
           >
             Zrušiť filtre
@@ -148,11 +178,16 @@ export default function ZahonyGrid({ zahony }: { zahony: Zahon[] }) {
                     {z.name}
                   </h2>
 
-                  {/* Tagy — svetlo + štýl */}
+                  {/* Tagy — svetlo + vlhkosť + štýl */}
                   <div className="flex flex-wrap gap-1.5">
                     <span className="text-xs bg-amber-50 text-amber-700 border border-amber-200 rounded-full px-2 py-0.5 font-medium">
                       {LIGHT_LABELS[z.categories.light] ?? z.categories.light}
                     </span>
+                    {z.categories.moisture && (
+                      <span className="text-xs bg-blue-50 text-blue-700 border border-blue-200 rounded-full px-2 py-0.5 font-medium">
+                        {MOISTURE_LABELS[z.categories.moisture] ?? z.categories.moisture}
+                      </span>
+                    )}
                     <span className="text-xs bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-2 py-0.5 font-medium">
                       {STYLE_LABELS[z.categories.style] ?? z.categories.style}
                     </span>

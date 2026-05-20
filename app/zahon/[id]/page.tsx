@@ -4,6 +4,61 @@ import { notFound } from 'next/navigation'
 import AddToCartButton from './AddToCartButton'
 import { CoverHero, PlanImg } from './ZahonCover'
 
+type SectionStyle = { icon: string; bg: string; border: string; text: string; badge: string }
+
+const SECTION_STYLES: Record<string, SectionStyle> = {
+  'Stanoviště:':          { icon: '📍', bg: 'bg-blue-50',   border: 'border-blue-200',   text: 'text-blue-800',   badge: 'bg-blue-100 text-blue-800' },
+  'Stanovisko:':          { icon: '📍', bg: 'bg-blue-50',   border: 'border-blue-200',   text: 'text-blue-800',   badge: 'bg-blue-100 text-blue-800' },
+  'Termín výsadby:':      { icon: '📅', bg: 'bg-amber-50',  border: 'border-amber-200',  text: 'text-amber-800',  badge: 'bg-amber-100 text-amber-800' },
+  'Příprava stanoviště:': { icon: '🛠️', bg: 'bg-stone-50',  border: 'border-stone-200',  text: 'text-stone-700',  badge: 'bg-stone-100 text-stone-700' },
+  'Výsadba:':             { icon: '🌱', bg: 'bg-green-50',  border: 'border-green-200',  text: 'text-green-800',  badge: 'bg-green-100 text-green-800' },
+  'Péče:':                { icon: '✂️', bg: 'bg-violet-50', border: 'border-violet-200', text: 'text-violet-800', badge: 'bg-violet-100 text-violet-800' },
+  'Pěstování:':           { icon: '🌿', bg: 'bg-teal-50',   border: 'border-teal-200',   text: 'text-teal-800',   badge: 'bg-teal-100 text-teal-800' },
+}
+
+const SECTION_HEADERS = Object.keys(SECTION_STYLES)
+
+function DesignText({ text }: { text: string }) {
+  const regex = new RegExp(`(${SECTION_HEADERS.map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'g')
+  const parts = text.split(regex).filter(Boolean)
+
+  const nodes: React.ReactNode[] = []
+  let i = 0
+
+  if (!SECTION_HEADERS.includes(parts[0])) {
+    nodes.push(
+      <p key="intro" className="text-sm text-stone-600 leading-relaxed mb-5 pb-5 border-b border-stone-100">
+        {parts[0].trim()}
+      </p>
+    )
+    i = 1
+  }
+
+  while (i < parts.length) {
+    const header = parts[i]
+    if (SECTION_HEADERS.includes(header)) {
+      const content = (parts[i + 1] || '').trim()
+      const s = SECTION_STYLES[header]
+      nodes.push(
+        <div key={header} className={`rounded-lg border ${s.border} ${s.bg} p-4 mb-3`}>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-base leading-none">{s.icon}</span>
+            <span className={`text-xs font-bold uppercase tracking-wide ${s.text}`}>
+              {header.replace(':', '')}
+            </span>
+          </div>
+          <p className="text-sm text-stone-600 leading-relaxed">{content}</p>
+        </div>
+      )
+      i += 2
+    } else {
+      i++
+    }
+  }
+
+  return <div>{nodes}</div>
+}
+
 export async function generateStaticParams() {
   return getZahony().map((z) => ({ id: z.id }))
 }
@@ -148,8 +203,8 @@ export default async function ZahonPage({ params }: { params: Promise<{ id: stri
         {/* Description */}
         {zahon.design?.characteristika && (
           <div className="bg-white rounded-xl border border-stone-200 p-5">
-            <h2 className="text-base font-semibold text-stone-800 mb-3">O záhone</h2>
-            <p className="text-sm text-stone-600 leading-relaxed">{zahon.design.characteristika}</p>
+            <h2 className="text-base font-semibold text-stone-800 mb-4">O záhone</h2>
+            <DesignText text={zahon.design.characteristika} />
           </div>
         )}
       </div>
