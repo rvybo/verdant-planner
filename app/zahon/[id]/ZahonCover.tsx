@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 
+const CDN = 'https://raw.githubusercontent.com/rvybo/verdant-planner/main/public/zahony'
+
 export function CoverHero({ id, name }: { id: string; name: string }) {
-  const [src, setSrc] = useState(`/zahony/${id}/cover.jpg`)
+  const [src, setSrc] = useState(`${CDN}/${id}/cover.jpg`)
   const [failed, setFailed] = useState(false)
 
   if (failed) return null
@@ -15,7 +17,7 @@ export function CoverHero({ id, name }: { id: string; name: string }) {
         alt={name}
         className="w-full h-full object-cover"
         onError={() => {
-          if (src.endsWith('.jpg')) setSrc(`/zahony/${id}/cover.png`)
+          if (src.endsWith('.jpg')) setSrc(`${CDN}/${id}/cover.png`)
           else setFailed(true)
         }}
       />
@@ -25,7 +27,7 @@ export function CoverHero({ id, name }: { id: string; name: string }) {
 }
 
 export function PlanImg({ id }: { id: string }) {
-  const [src, setSrc] = useState(`/zahony/${id}/plan-image.jpg`)
+  const [src, setSrc] = useState(`${CDN}/${id}/plan-image.jpg`)
   const [failed, setFailed] = useState(false)
 
   if (failed) return <div className="h-32 bg-stone-100 flex items-center justify-center text-stone-400 text-xs">Plán nedostupný</div>
@@ -36,7 +38,7 @@ export function PlanImg({ id }: { id: string }) {
       alt="Osadzací plán"
       className="w-full object-contain max-h-64"
       onError={() => {
-        if (src.endsWith('.jpg')) setSrc(`/zahony/${id}/plan-image.png`)
+        if (src.endsWith('.jpg')) setSrc(`${CDN}/${id}/plan-image.png`)
         else setFailed(true)
       }}
     />

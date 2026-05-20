@@ -4,8 +4,10 @@ import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import type { Zahon } from '@/lib/zahony'
 
+const CDN = 'https://raw.githubusercontent.com/rvybo/verdant-planner/main/public/zahony'
+
 function CoverImage({ id, alt }: { id: string; alt: string }) {
-  const [src, setSrc] = useState(`/zahony/${id}/cover.jpg`)
+  const [src, setSrc] = useState(`${CDN}/${id}/cover.jpg`)
   const [failed, setFailed] = useState(false)
   if (failed) return <div className="h-40 bg-stone-100" />
   return (
@@ -15,7 +17,7 @@ function CoverImage({ id, alt }: { id: string; alt: string }) {
         alt={alt}
         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         onError={() => {
-          if (src.endsWith('.jpg')) setSrc(`/zahony/${id}/cover.png`)
+          if (src.endsWith('.jpg')) setSrc(`${CDN}/${id}/cover.png`)
           else setFailed(true)
         }}
       />

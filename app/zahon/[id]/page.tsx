@@ -119,7 +119,7 @@ export default async function ZahonPage({ params }: { params: Promise<{ id: stri
               Stiahnite si kompletný osadzací plán vo formáte PDF vrátane zoznamu rastlín a pokynov na výsadbu.
             </p>
             <a
-              href={`/zahony/${zahon.id}/plan.pdf`}
+              href={`https://raw.githubusercontent.com/rvybo/verdant-planner/main/public/zahony/${zahon.id}/plan.pdf`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white rounded-lg px-5 py-3 font-medium transition-colors"
