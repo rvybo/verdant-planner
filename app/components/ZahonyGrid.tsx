@@ -142,57 +142,61 @@ export default function ZahonyGrid({ zahony }: { zahony: Zahon[] }) {
                 {/* Cover photo */}
                 <CoverImage id={z.id} alt={z.name} />
 
-                <div className="p-4">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <h2 className="font-semibold text-stone-800 group-hover:text-green-700 leading-tight text-sm">
+                <div className="p-4 flex flex-col gap-3">
+                  {/* Názov */}
+                  <h2 className="font-semibold text-stone-800 group-hover:text-green-700 leading-snug text-sm">
                     {z.name}
                   </h2>
-                  <span className="shrink-0 text-xs bg-green-50 text-green-700 border border-green-200 rounded-full px-2 py-0.5">
-                    {z.lumigreen.coverage}%
-                  </span>
-                </div>
 
-                <div className="flex flex-wrap gap-1 mb-3">
-                  <span className="text-xs text-stone-500">
-                    {LIGHT_LABELS[z.categories.light] ?? z.categories.light}
-                  </span>
-                  <span className="text-stone-300">·</span>
-                  <span className="text-xs text-stone-500">
-                    {STYLE_LABELS[z.categories.style] ?? z.categories.style}
-                  </span>
-                </div>
-
-                <div className="text-xs text-stone-400 space-y-0.5">
-                  <div>📐 {z.specs.size}</div>
-                  <div>🌈 {z.specs.colors}</div>
-                </div>
-
-                {/* Matching plants highlight */}
-                {matchingPlants.length > 0 && (
-                  <div className="mt-2 pt-2 border-t border-stone-100">
-                    <div className="text-xs text-green-700 font-medium mb-1">Obsahuje:</div>
-                    <div className="flex flex-wrap gap-1">
-                      {matchingPlants.slice(0, 3).map((p, i) => (
-                        <span
-                          key={i}
-                          className="text-xs bg-green-50 text-green-700 border border-green-200 rounded px-1.5 py-0.5"
-                        >
-                          {p.czName}
-                        </span>
-                      ))}
-                      {matchingPlants.length > 3 && (
-                        <span className="text-xs text-stone-400">+{matchingPlants.length - 3}</span>
-                      )}
-                    </div>
+                  {/* Tagy — svetlo + štýl */}
+                  <div className="flex flex-wrap gap-1.5">
+                    <span className="text-xs bg-amber-50 text-amber-700 border border-amber-200 rounded-full px-2 py-0.5 font-medium">
+                      {LIGHT_LABELS[z.categories.light] ?? z.categories.light}
+                    </span>
+                    <span className="text-xs bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-2 py-0.5 font-medium">
+                      {STYLE_LABELS[z.categories.style] ?? z.categories.style}
+                    </span>
                   </div>
-                )}
 
-                <div className="mt-3 pt-3 border-t border-stone-100 flex items-center justify-between">
-                  <span className="text-xs text-stone-400">{z.plants.length} druhov</span>
-                  <span className="text-xs text-green-600 font-medium group-hover:underline">
-                    Zobraziť →
-                  </span>
-                </div>
+                  {/* Parametre */}
+                  <div className="text-xs text-stone-500 space-y-1">
+                    <div>📐 <span className="text-stone-700 font-medium">{z.specs.size}</span></div>
+                    <div>🌸 <span className="text-stone-700 font-medium">{z.specs.bloomPeriod}</span></div>
+                    <div>🎨 <span className="text-stone-700 font-medium">{z.specs.colors}</span></div>
+                  </div>
+
+                  {/* Matching plants highlight */}
+                  {matchingPlants.length > 0 && (
+                    <div className="pt-2 border-t border-stone-100">
+                      <div className="text-xs text-green-700 font-medium mb-1">🔍 Obsahuje:</div>
+                      <div className="flex flex-wrap gap-1">
+                        {matchingPlants.slice(0, 3).map((p, i) => (
+                          <span
+                            key={i}
+                            className="text-xs bg-green-50 text-green-700 border border-green-200 rounded px-1.5 py-0.5"
+                          >
+                            {p.czName}
+                          </span>
+                        ))}
+                        {matchingPlants.length > 3 && (
+                          <span className="text-xs text-stone-400">+{matchingPlants.length - 3}</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Päta */}
+                  <div className="pt-2 border-t border-stone-100 flex items-center justify-between mt-auto">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs bg-green-50 text-green-700 border border-green-200 rounded-full px-2 py-0.5 font-semibold">
+                        🛒 {z.lumigreen.coverage}%
+                      </span>
+                      <span className="text-xs text-stone-400">{z.plants.length} druhov</span>
+                    </div>
+                    <span className="text-xs text-green-600 font-medium group-hover:underline">
+                      Detail →
+                    </span>
+                  </div>
                 </div>
               </Link>
             )
