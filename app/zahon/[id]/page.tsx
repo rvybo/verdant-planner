@@ -1,8 +1,8 @@
-import { getZahon, getZahony } from '@/lib/zahony'
+import { getZahon, getZahony, getZahonPhotos } from '@/lib/zahony'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import AddToCartButton from './AddToCartButton'
-import { CoverHero, CoverCard } from './ZahonCover'
+import { CoverHero, CoverCard, PhotoGallery } from './ZahonCover'
 
 type SectionStyle = { icon: string; bg: string; border: string; text: string; badge: string }
 
@@ -72,6 +72,7 @@ export default async function ZahonPage({ params }: { params: Promise<{ id: stri
   if (!zahon) notFound()
 
   const availablePlants = zahon.plants.filter((p) => p.lumigreen.length > 0)
+  const photos = getZahonPhotos(id)
 
   return (
     <main className="min-h-screen bg-stone-50">
@@ -202,6 +203,9 @@ export default async function ZahonPage({ params }: { params: Promise<{ id: stri
             <AddToCartButton zahonId={zahon.id} zahonName={zahon.name} />
           </div>
         )}
+
+        {/* Photo gallery */}
+        <PhotoGallery id={zahon.id} photos={photos} />
 
         {/* Description */}
         {zahon.design?.characteristika && (

@@ -50,3 +50,17 @@ export function getZahony(): Zahon[] {
 export function getZahon(id: string): Zahon | undefined {
   return getZahony().find((z) => z.id === id)
 }
+
+let _photosCache: Record<string, string[]> | null = null
+
+export function getZahonPhotos(id: string): string[] {
+  if (!_photosCache) {
+    const filePath = path.join(process.cwd(), 'data', 'zahony-photos.json')
+    const raw = fs.readFileSync(filePath, 'utf-8')
+    _photosCache = JSON.parse(raw) as Record<string, string[]>
+  }
+  const SKIP = new Set(['cover.jpg', 'plan-image.jpg', 'cover.png', 'plan-image.png'])
+  return (_photosCache[id] ?? []).filter(
+    (f) => !SKIP.has(f.split('/').pop()!) && !/\.pdf$/i.test(f)
+  )
+}

@@ -63,3 +63,32 @@ export function CoverCard({ id, name }: { id: string; name: string }) {
     />
   )
 }
+
+function GalleryPhoto({ id, file }: { id: string; file: string }) {
+  const [visible, setVisible] = useState(true)
+  if (!visible) return null
+  return (
+    <a href={`${CDN}/${id}/${file}`} target="_blank" rel="noopener noreferrer">
+      <img
+        src={`${CDN}/${id}/${file}`}
+        alt={file.split('/').pop()?.replace(/-415x280\.(jpg|jpeg|png)$/i, '').replace(/-/g, ' ') ?? ''}
+        className="w-full h-36 object-cover rounded-lg hover:opacity-90 transition-opacity"
+        onError={() => setVisible(false)}
+      />
+    </a>
+  )
+}
+
+export function PhotoGallery({ id, photos }: { id: string; photos: string[] }) {
+  if (photos.length === 0) return null
+  return (
+    <div className="bg-white rounded-xl border border-stone-200 p-5">
+      <h2 className="text-base font-semibold text-stone-800 mb-4">Fotogaléria ({photos.length})</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        {photos.map((file) => (
+          <GalleryPhoto key={file} id={id} file={file} />
+        ))}
+      </div>
+    </div>
+  )
+}
