@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 const CDN = 'https://raw.githubusercontent.com/rvybo/verdant-planner/main/public/zahony'
 
@@ -64,31 +64,90 @@ export function CoverCard({ id, name }: { id: string; name: string }) {
   )
 }
 
-function GalleryPhoto({ id, file }: { id: string; file: string }) {
+function GalleryThumb({ id, file, onClick }: { id: string; file: string; onClick: () => void }) {
   const [visible, setVisible] = useState(true)
   if (!visible) return null
   return (
-    <a href={`${CDN}/${id}/${file}`} target="_blank" rel="noopener noreferrer">
+    <button className="block w-full cursor-zoom-in" onClick={onClick}>
       <img
         src={`${CDN}/${id}/${file}`}
-        alt={file.split('/').pop()?.replace(/-415x280\.(jpg|jpeg|png)$/i, '').replace(/-/g, ' ') ?? ''}
+        alt=""
         className="w-full h-36 object-cover rounded-lg hover:opacity-90 transition-opacity"
         onError={() => setVisible(false)}
       />
-    </a>
+    </button>
   )
 }
 
 export function PhotoGallery({ id, photos }: { id: string; photos: string[] }) {
+  const [active, setActive] = useState<number | null>(null)
+
+  const close = useCallback(() => setActive(null), [])
+  const prev = useCallback(() => setActive(i => i !== null ? (i - 1 + photos.length) % photos.length : null), [photos.length])
+  const next = useCallback(() => setActive(i => i !== null ? (i + 1) % photos.length : null), [photos.length])
+
+  useEffect(() => {
+    if (active === null) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close()
+      if (e.key === 'ArrowLeft') prev()
+      if (e.key === 'ArrowRight') next()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [active, close, prev, next])
+
   if (photos.length === 0) return null
+
   return (
-    <div className="bg-white rounded-xl border border-stone-200 p-5">
-      <h2 className="text-base font-semibold text-stone-800 mb-4">Fotogaléria ({photos.length})</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-        {photos.map((file) => (
-          <GalleryPhoto key={file} id={id} file={file} />
-        ))}
+    <>
+      <div className="bg-white rounded-xl border border-stone-200 p-5">
+        <h2 className="text-base font-semibold text-stone-800 mb-4">Fotogaléria ({photos.length})</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {photos.map((file, idx) => (
+            <GalleryThumb key={file} id={id} file={file} onClick={() => setActive(idx)} />
+          ))}
+        </div>
       </div>
-    </div>
+
+      {active !== null && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+          onClick={close}
+        >
+          {/* Prev */}
+          <button
+            className="absolute left-3 sm:left-6 text-white bg-black/40 hover:bg-black/70 rounded-full w-11 h-11 flex items-center justify-center text-2xl transition-colors z-10"
+            onClick={e => { e.stopPropagation(); prev() }}
+            aria-label="Predchádzajúca"
+          >‹</button>
+
+          {/* Image */}
+          <img
+            src={`${CDN}/${id}/${photos[active]}`}
+            alt=""
+            className="max-h-[90vh] max-w-[90vw] object-contain rounded shadow-2xl"
+            onClick={e => e.stopPropagation()}
+          />
+
+          {/* Next */}
+          <button
+            className="absolute right-3 sm:right-6 text-white bg-black/40 hover:bg-black/70 rounded-full w-11 h-11 flex items-center justify-center text-2xl transition-colors z-10"
+            onClick={e => { e.stopPropagation(); next() }}
+            aria-label="Nasledujúca"
+          >›</button>
+
+          {/* Counter + close */}
+          <div className="absolute top-4 right-4 flex items-center gap-3">
+            <span className="text-white/70 text-sm">{active + 1} / {photos.length}</span>
+            <button
+              className="text-white bg-black/40 hover:bg-black/70 rounded-full w-9 h-9 flex items-center justify-center text-lg transition-colors"
+              onClick={close}
+              aria-label="Zavrieť"
+            >✕</button>
+          </div>
+        </div>
+      )}
+    </>
   )
 }
