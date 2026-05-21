@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import AddToCartButton from './AddToCartButton'
 import { CoverHero, CoverCard, PhotoGallery } from './ZahonCover'
+import GardenCalculator from './GardenCalculator'
 
 type SectionStyle = { icon: string; bg: string; border: string; text: string; badge: string }
 
@@ -62,6 +63,57 @@ function DesignText({ text }: { text: string }) {
   return <div>{nodes}</div>
 }
 
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','Máj','Jún','Júl','Aug','Sep','Okt','Nov','Dec']
+const MONTH_CZ: Record<string, number> = {
+  leden:1, únor:2, březen:3, duben:4, květen:5, červen:6,
+  červenec:7, srpen:8, září:9, říjen:10, listopad:11, prosinec:12,
+  jaro:3, léto:6, podzim:9, zima:12,
+}
+
+function parseBloomMonths(period: string): number[] {
+  if (!period?.trim()) return []
+  const lower = period.toLowerCase()
+  const found: number[] = []
+  for (const [name, month] of Object.entries(MONTH_CZ)) {
+    if (lower.includes(name)) found.push(month)
+  }
+  if (found.length === 0) return []
+  const min = Math.min(...found)
+  const max = Math.max(...found)
+  const range: number[] = []
+  for (let m = min; m <= max; m++) range.push(m)
+  return range
+}
+
+function BloomCalendar({ bloomPeriod }: { bloomPeriod: string }) {
+  const activeMonths = new Set(parseBloomMonths(bloomPeriod))
+  return (
+    <div className="bg-white rounded-xl border border-stone-200 p-5">
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-base">🌸</span>
+        <h2 className="text-base font-semibold text-stone-800">Obdobie kvitnutia</h2>
+      </div>
+      <div className="grid grid-cols-12 gap-1">
+        {MONTH_NAMES.map((name, i) => {
+          const month = i + 1
+          const active = activeMonths.has(month)
+          return (
+            <div key={month} className="flex flex-col items-center gap-1">
+              <div className={`w-full h-6 rounded ${active ? 'bg-green-500' : 'bg-stone-100'}`} />
+              <span className={`text-[9px] font-medium ${active ? 'text-green-700' : 'text-stone-400'}`}>
+                {name}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+      {bloomPeriod && (
+        <p className="text-xs text-stone-400 mt-2 italic">{bloomPeriod}</p>
+      )}
+    </div>
+  )
+}
+
 export async function generateStaticParams() {
   return getZahony().map((z) => ({ id: z.id }))
 }
@@ -109,6 +161,9 @@ export default async function ZahonPage({ params }: { params: Promise<{ id: stri
             <div className="font-medium text-stone-700">{zahon.specs.height}</div>
           </div>
         </div>
+
+        {/* Bloom calendar */}
+        <BloomCalendar bloomPeriod={zahon.specs.bloomPeriod} />
 
         {/* Plan image + PDF */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -192,6 +247,9 @@ export default async function ZahonPage({ params }: { params: Promise<{ id: stri
             ))}
           </div>
         </div>
+
+        {/* Garden calculator */}
+        <GardenCalculator plants={zahon.plants} standardSize={zahon.specs.size} />
 
         {/* Add to cart */}
         {availablePlants.length > 0 && (
