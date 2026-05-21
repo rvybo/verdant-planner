@@ -44,3 +44,22 @@ export function PlanImg({ id }: { id: string }) {
     />
   )
 }
+
+export function CoverCard({ id, name }: { id: string; name: string }) {
+  const [src, setSrc] = useState(`${CDN}/${id}/cover.jpg`)
+  const [failed, setFailed] = useState(false)
+
+  if (failed) return <div className="h-48 bg-stone-100 flex items-center justify-center text-stone-400 text-sm">Foto nedostupné</div>
+
+  return (
+    <img
+      src={src}
+      alt={name}
+      className="w-full h-48 object-cover"
+      onError={() => {
+        if (src.endsWith('.jpg')) setSrc(`${CDN}/${id}/cover.png`)
+        else setFailed(true)
+      }}
+    />
+  )
+}

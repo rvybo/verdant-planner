@@ -2,7 +2,7 @@ import { getZahon, getZahony } from '@/lib/zahony'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import AddToCartButton from './AddToCartButton'
-import { CoverHero, PlanImg } from './ZahonCover'
+import { CoverHero, CoverCard } from './ZahonCover'
 
 type SectionStyle = { icon: string; bg: string; border: string; text: string; badge: string }
 
@@ -14,6 +14,9 @@ const SECTION_STYLES: Record<string, SectionStyle> = {
   'Výsadba:':             { icon: '🌱', bg: 'bg-green-50',  border: 'border-green-200',  text: 'text-green-800',  badge: 'bg-green-100 text-green-800' },
   'Péče:':                { icon: '✂️', bg: 'bg-violet-50', border: 'border-violet-200', text: 'text-violet-800', badge: 'bg-violet-100 text-violet-800' },
   'Pěstování:':           { icon: '🌿', bg: 'bg-teal-50',   border: 'border-teal-200',   text: 'text-teal-800',   badge: 'bg-teal-100 text-teal-800' },
+  'Rozvoj výsadby:':      { icon: '📈', bg: 'bg-emerald-50',border: 'border-emerald-200',text: 'text-emerald-800',badge: 'bg-emerald-100 text-emerald-800' },
+  'Náš tip:':             { icon: '💡', bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-800', badge: 'bg-yellow-100 text-yellow-800' },
+  'Charakteristika:':     { icon: '📋', bg: 'bg-stone-50',  border: 'border-stone-200',  text: 'text-stone-700',  badge: 'bg-stone-100 text-stone-700' },
 }
 
 const SECTION_HEADERS = Object.keys(SECTION_STYLES)
@@ -110,9 +113,9 @@ export default async function ZahonPage({ params }: { params: Promise<{ id: stri
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="bg-white rounded-xl border border-stone-200 overflow-hidden">
             <div className="px-4 pt-4 pb-2 text-xs font-semibold text-stone-500 uppercase tracking-wide">
-              Osadzací plán
+              Fotografia záhona
             </div>
-            <PlanImg id={zahon.id} />
+            <CoverCard id={zahon.id} name={zahon.name} />
           </div>
           <div className="flex flex-col justify-center gap-3 p-4 bg-white rounded-xl border border-stone-200">
             <p className="text-sm text-stone-600">
